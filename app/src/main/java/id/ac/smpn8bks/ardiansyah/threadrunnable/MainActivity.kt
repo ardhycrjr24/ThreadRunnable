@@ -17,10 +17,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inisialisasi handler untuk update UI
         mHandler = MyHandler()
 
-        // Tombol untuk mulai proses thread
         binding.button.setOnClickListener {
             Thread {
                 killSomeTime()
@@ -28,10 +26,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Handler digunakan untuk menerima pesan dari thread background
-     * dan memperbarui UI di Main Thread.
-     */
     @SuppressLint("HandlerLeak")
     inner class MyHandler : Handler() {
         override fun handleMessage(msg: Message) {
@@ -41,10 +35,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Simulasi proses berat (looping 1..20)
-     * Setiap iterasi mengirim pesan ke Handler.
-     */
     private fun killSomeTime() {
         for (i in 1..20) {
 
