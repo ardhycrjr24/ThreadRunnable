@@ -1,60 +1,34 @@
 package id.ac.smpn8bks.ardiansyah.threadrunnable
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
+import android.os.AsyncTask
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
+import androidx.appcompat.app.AppCompatActivity
 import id.ac.smpn8bks.ardiansyah.threadrunnable.databinding.ActivityMainBinding
-
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
-    private lateinit var mHandler: Handler
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        mHandler = MyHandler()
-
         binding.button.setOnClickListener {
-            Thread {
-                killSomeTime()
-            }.start()
+            Worker().execute()
         }
     }
-
-    @SuppressLint("HandlerLeak")
-    inner class MyHandler : Handler() {
-        override fun handleMessage(msg: Message) {
-
-            val counterValue = msg.data?.getString("counter")
-            binding.textView.text = "Hitungan ke-$counterValue"
-        }
-    }
-
-    private fun killSomeTime() {
-        for (i in 1..20) {
-
-            val msg = Message.obtain()
-            msg.data.putString("counter", i.toString())
-
-            mHandler.sendMessage(msg)
-
-            try {
+    @SuppressLint("StaticFieldLeak")
+    inner class Worker : AsyncTask<Void, String, Boolean>() {
+        override fun doInBackground(vararg p0: Void?): Boolean {
+            for (i in 1..20) {
+                publishProgress(i.toString())
                 Thread.sleep(2000)
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
             }
-
-            println("i: $i")
+            return true
         }
-
-
-        val msg = Message.obtain()
-        msg.data.putString("counter", "Selesai!")
-        mHandler.sendMessage(msg)
+        override fun onProgressUpdate(vararg values: String?) {
+            binding.textView.text = values[0]
+        }
+        override fun onPostExecute(result: Boolean?) {
+            println(result)
+        }
     }
 }
